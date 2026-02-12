@@ -1,30 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeless Love Letter</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timeless Love Letter</title>
+
+<link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-    <!-- Background Music -->
-    <audio id="bgMusic" loop autoplay>
-        <source src="background-music.mp3" type="audio/mp3">
-        Your browser does not support the audio element.
-    </audio>
+<!-- Intro Screen -->
+<div class="intro-screen" id="intro">
+    <div class="envelope" id="envelope">
+        <div class="flap"></div>
+        <div class="body"></div>
+    </div>
+    <p class="open-text">Click to Open</p>
+</div>
 
-    <!-- Postcard (Click to Flip) -->
+<!-- Audio -->
+<audio id="bgMusic" loop>
+    <source src="background-music.mp3" type="audio/mp3">
+</audio>
+
+<audio id="secondSong">
+    <source src="second-song.mp3" type="audio/mp3">
+</audio>
+
+<!-- Main Experience -->
+<div class="experience hidden">
+
+    <div class="heart-layer" id="heartLayer"></div>
+
     <div class="postcard" id="postcard">
         <div class="front">
-            <p id="typewriter" class="typewriter-text"></p> <!-- Poem will appear here -->
+            <p id="typewriter" class="typewriter-text"></p>
         </div>
+
         <div class="back">
-            <p id="hiddenMessage">Your secret message will appear here...</p>
+            <div class="back-content">
+                <p class="romantic-line">
+                    You are the melody my heart always hums.
+                </p>
+
+                <button id="playSongBtn" class="song-btn">
+                    Play Our Song 🎵
+                </button>
+
+                <div id="lyricsCard" class="lyrics-card hidden"></div>
+            </div>
         </div>
     </div>
 
-<script src="script.js" defer></script>
+    <div id="lyricsContainer" class="lyrics hidden"></div>
+
+    <button id="replayBtn" class="replay-btn hidden">Replay 💌</button>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
