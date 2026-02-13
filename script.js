@@ -1,174 +1,114 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const typewriterText = document.getElementById("typewriter");
+    const postcard = document.getElementById("postcard");
+    const hiddenMessage = document.getElementById("hiddenMessage");
+    const bgMusic = document.getElementById("bgMusic");
 
-const intro = document.getElementById("intro");
-const envelope = document.getElementById("envelope");
-const experience = document.querySelector(".experience");
-const typewriterText = document.getElementById("typewriter");
-const heartLayer = document.getElementById("heartLayer");
-const bgMusic = document.getElementById("bgMusic");
-const secondSong = document.getElementById("secondSong");
-const replayBtn = document.getElementById("replayBtn");
-const postcard = document.getElementById("postcard");
-const playSongBtn = document.getElementById("playSongBtn");
+    const poem = [
+        "To my dearest,",
+        "The stars above pale in comparison to your light,",
+        "Your eyes, like twilight, shimmer so bright.",
+        "Each moment with you is a dream come true,",
+        "Forever and always, I’ll cherish you."
+    ];
 
-/* IMPORTANT: Lyrics now appear inside card */
-const lyricsCard = document.getElementById("lyricsCard");
+    let lineIndex = 0;
+    let charIndex = 0;
+    const typewriterSound = new Audio("typewriter.mp3");
+    let heartInterval;
 
-/* ------------------ POEM ------------------ */
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+        document.body.appendChild(heart);
 
-const poem = [
-    "To my dearest,",
-    "The stars above pale in comparison to your light,",
-    "Your eyes shimmer brighter than twilight.",
-    "Every moment with you feels like magic,",
-    "Forever and always, my heart is yours."
-];
-
-/* ------------------ TIMESTAMPED LYRICS ------------------ */
-/* 🔧 Adjust time values to match your actual song */
-
-const lyricsData = [
-    { time: 2, text: "Ohnu Kivein Na Houga Pyar Tere Nal Ni..." },
-    { time: 5, text: "Jehne Vekh Leya Hasdi Nu Ik Var Ni..." },
-    { time: 8, text: "Panjwa Mile Ta Oh Vi Tera Karda..." },
-    { time: 18, text: "Pehla Ee A Tere Nam Din Char Ni." }
-];
-
-/* ------------------ STATE ------------------ */
-
-let lineIndex = 0;
-let charIndex = 0;
-let hearts = [];
-let heartInterval;
-let lyricsInitialized = false;
-
-/* ------------------ HEARTS ------------------ */
-
-function createHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * window.innerWidth + "px";
-    heart.style.top = window.innerHeight + "px";
-    heartLayer.appendChild(heart);
-    hearts.push(heart);
-
-    requestAnimationFrame(() => {
-        heart.style.transform = `translateY(-${window.innerHeight + 100}px)`;
-    });
-}
-
-function startHearts() {
-    heartInterval = setInterval(createHeart, 400);
-}
-
-function formFlower() {
-    clearInterval(heartInterval);
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const radius = 80;
-
-    hearts.forEach((heart, i) => {
-        const angle = (i / hearts.length) * Math.PI * 2;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        heart.style.left = x + "px";
-        heart.style.top = y + "px";
-        heart.style.transform = "none";
-    });
-
-    replayBtn.classList.remove("hidden");
-}
-
-/* ------------------ TYPEWRITER ------------------ */
-
-function typePoem() {
-    if (lineIndex < poem.length) {
-        if (charIndex < poem[lineIndex].length) {
-            typewriterText.innerHTML += poem[lineIndex][charIndex];
-            charIndex++;
-            setTimeout(typePoem, 80);
-        } else {
-            typewriterText.innerHTML += "<br>";
-            charIndex = 0;
-            lineIndex++;
-            setTimeout(typePoem, 400);
-        }
-    } else {
-        formFlower();
+        setTimeout(() => heart.remove(), 5000);
     }
-}
 
-/* ------------------ LYRICS SYSTEM ------------------ */
+    function startHearts() {
+        heartInterval = setInterval(createHeart, 500);
+    }
 
-function initLyrics() {
-    if (lyricsInitialized) return;
+    function stopHeartsAndFormFlower() {
+        clearInterval(heartInterval);
 
-    lyricsCard.innerHTML = "";
+        document.querySelectorAll(".heart").forEach((heart) => {
+            heart.style.animation = "none";
+            heart.style.position = "fixed";
+            heart.style.left = "50%";
+            heart.style.top = "50%";
+            heart.style.transform = "translate(-50%, -50%)";
+            heart.style.fontSize = "40px";
+            heart.style.textShadow = "0px 0px 10px pink";
+        });
 
-    lyricsData.forEach(line => {
-        const p = document.createElement("p");
-        p.classList.add("lyric-line");
-        p.textContent = line.text;
-        lyricsCard.appendChild(p);
-    });
+        setTimeout(() => {
+            document.querySelectorAll(".heart").forEach((heart) => heart.remove());
 
-    lyricsInitialized = true;
-}
+            const flower = document.createElement("div");
+            flower.innerHTML = "🌸";
+            flower.style.position = "fixed";
+            flower.style.left = "75%";
+            flower.style.top = "80%";
+            flower.style.transform = "translate(-50%, -50%) scale(2)";
+            flower.style.fontSize = "100px";
+            flower.style.color = "#ff4d6d";
+            flower.style.textShadow = "0px 0px 15px #ff99aa, 0px 0px 30px #ff4d6d";
+            document.body.appendChild(flower);
+        }, 1000);
+    }
 
-function syncLyrics() {
-    const currentTime = secondSong.currentTime;
-    const lines = document.querySelectorAll(".lyric-line");
+    function typePoem() {
+        if (lineIndex === 0 && charIndex === 0) {
+            bgMusic.play().catch((error) => console.log("Music play issue:", error));
+            playTypewriterSound();
+            startHearts();
+        }
 
-    lyricsData.forEach((line, index) => {
-        if (
-            currentTime >= line.time &&
-            (index === lyricsData.length - 1 || currentTime < lyricsData[index + 1].time)
-        ) {
-            lines.forEach(l => l.classList.remove("active"));
-            if (lines[index]) {
-                lines[index].classList.add("active");
+        if (lineIndex < poem.length) {
+            if (charIndex < poem[lineIndex].length) {
+                typewriterText.innerHTML += poem[lineIndex][charIndex];
+                charIndex++;
+                setTimeout(typePoem, 100);
+            } else {
+                typewriterText.innerHTML += "<br>";
+                charIndex = 0;
+                lineIndex++;
+                setTimeout(typePoem, 500);
             }
+        } else {
+            stopTypewriterSound();
+            stopHeartsAndFormFlower();
+        }
+    }
+
+    function playTypewriterSound() {
+        typewriterSound.loop = true;
+        typewriterSound.play();
+    }
+
+    function stopTypewriterSound() {
+        typewriterSound.pause();
+        typewriterSound.currentTime = 0;
+    }
+
+    typePoem();
+
+    postcard.addEventListener("click", () => {
+        postcard.classList.toggle("flipped");
+
+        if (postcard.classList.contains("flipped")) {
+            hiddenMessage.style.opacity = "1";
+            hiddenMessage.textContent = "I’m glad you opened this. You make my heart flutter.";
+        } else {
+            hiddenMessage.style.opacity = "0";
         }
     });
-}
 
-/* ------------------ EVENTS ------------------ */
-
-envelope.addEventListener("click", () => {
-    envelope.classList.add("open");
-    setTimeout(() => {
-        intro.style.display = "none";
-        experience.classList.remove("hidden");
-        bgMusic.volume = 0.6;
-        bgMusic.play();
-        startHearts();
-        typePoem();
-    }, 1000);
-});
-
-postcard.addEventListener("click", () => {
-    postcard.classList.toggle("flipped");
-});
-
-playSongBtn.addEventListener("click", () => {
-
-    bgMusic.pause();
-
-    secondSong.currentTime = 0;
-    secondSong.play();
-
-    lyricsCard.classList.remove("hidden");
-
-    initLyrics();
-
-    /* Sync lyrics in real-time */
-    secondSong.removeEventListener("timeupdate", syncLyrics);
-    secondSong.addEventListener("timeupdate", syncLyrics);
-});
-
-replayBtn.addEventListener("click", () => {
-    location.reload();
-});
-
+    document.body.addEventListener("click", () => {
+        bgMusic.play().catch((error) => console.error("Audio play failed:", error));
+    });
 });
